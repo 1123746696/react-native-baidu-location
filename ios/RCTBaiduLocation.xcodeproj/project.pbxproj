@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE3365301D81689E003E79E8 /* RCTBaiduLocation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE33652F1D81689E003E79E8 /* RCTBaiduLocation.h */; };
-		CE3365321D81689E003E79E8 /* RCTBaiduLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3365311D81689E003E79E8 /* RCTBaiduLocation.m */; };
+		CE3365611D819081003E79E8 /* RCTBaiduLocation.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE3365601D819081003E79E8 /* RCTBaiduLocation.mm */; };
+		CE33656A1D819844003E79E8 /* BaiduMapAPI_Base.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */; };
+		CE33656B1D819844003E79E8 /* BaiduMapAPI_Location.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -18,7 +19,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				CE3365301D81689E003E79E8 /* RCTBaiduLocation.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -26,8 +26,10 @@
 
 /* Begin PBXFileReference section */
 		CE33652C1D81689E003E79E8 /* libRCTBaiduLocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBaiduLocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE33652F1D81689E003E79E8 /* RCTBaiduLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBaiduLocation.h; sourceTree = "<group>"; };
-		CE3365311D81689E003E79E8 /* RCTBaiduLocation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTBaiduLocation.m; sourceTree = "<group>"; };
+		CE33655F1D819081003E79E8 /* RCTBaiduLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBaiduLocation.h; sourceTree = "<group>"; };
+		CE3365601D819081003E79E8 /* RCTBaiduLocation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTBaiduLocation.mm; sourceTree = "<group>"; };
+		CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Base.framework; sourceTree = "<group>"; };
+		CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Location.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +37,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE33656A1D819844003E79E8 /* BaiduMapAPI_Base.framework in Frameworks */,
+				CE33656B1D819844003E79E8 /* BaiduMapAPI_Location.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +48,8 @@
 		CE3365231D81689E003E79E8 = {
 			isa = PBXGroup;
 			children = (
-				CE33652E1D81689E003E79E8 /* RCTBaiduLocation */,
+				CE3365671D819844003E79E8 /* BaiduLocation */,
+				CE33655E1D819081003E79E8 /* RCTBaiduLocation */,
 				CE33652D1D81689E003E79E8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -57,13 +62,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CE33652E1D81689E003E79E8 /* RCTBaiduLocation */ = {
+		CE33655E1D819081003E79E8 /* RCTBaiduLocation */ = {
 			isa = PBXGroup;
 			children = (
-				CE33652F1D81689E003E79E8 /* RCTBaiduLocation.h */,
-				CE3365311D81689E003E79E8 /* RCTBaiduLocation.m */,
+				CE33655F1D819081003E79E8 /* RCTBaiduLocation.h */,
+				CE3365601D819081003E79E8 /* RCTBaiduLocation.mm */,
 			);
 			path = RCTBaiduLocation;
+			sourceTree = "<group>";
+		};
+		CE3365671D819844003E79E8 /* BaiduLocation */ = {
+			isa = PBXGroup;
+			children = (
+				CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */,
+				CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */,
+			);
+			path = BaiduLocation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -122,7 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE3365321D81689E003E79E8 /* RCTBaiduLocation.m in Sources */,
+				CE3365611D819081003E79E8 /* RCTBaiduLocation.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +228,11 @@
 		CE3365361D81689E003E79E8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/BaiduLocation",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../react-native/React/**";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -223,6 +242,11 @@
 		CE3365371D81689E003E79E8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/BaiduLocation",
+				);
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../react-native/React/**";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -248,6 +272,7 @@
 				CE3365371D81689E003E79E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

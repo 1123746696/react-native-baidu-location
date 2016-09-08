@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@interface RCTBaiduLocation : NSObject
+#import "RCTBridgeModule.h"
+@interface RCTBaiduLocation : NSObject<RCTBridgeModule>
 
 @end
