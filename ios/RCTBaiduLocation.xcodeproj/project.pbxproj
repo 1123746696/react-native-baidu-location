@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE3365611D819081003E79E8 /* RCTBaiduLocation.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE3365601D819081003E79E8 /* RCTBaiduLocation.mm */; };
+		CE1AC55B1D819A17006598FF /* RCTBaiduLocation.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE1AC55A1D819A17006598FF /* RCTBaiduLocation.mm */; };
 		CE33656A1D819844003E79E8 /* BaiduMapAPI_Base.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */; };
 		CE33656B1D819844003E79E8 /* BaiduMapAPI_Location.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */; };
 /* End PBXBuildFile section */
@@ -25,9 +25,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE1AC5591D819A17006598FF /* RCTBaiduLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBaiduLocation.h; sourceTree = "<group>"; };
+		CE1AC55A1D819A17006598FF /* RCTBaiduLocation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTBaiduLocation.mm; sourceTree = "<group>"; };
 		CE33652C1D81689E003E79E8 /* libRCTBaiduLocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBaiduLocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE33655F1D819081003E79E8 /* RCTBaiduLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBaiduLocation.h; sourceTree = "<group>"; };
-		CE3365601D819081003E79E8 /* RCTBaiduLocation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTBaiduLocation.mm; sourceTree = "<group>"; };
 		CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Base.framework; sourceTree = "<group>"; };
 		CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Location.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -65,8 +65,8 @@
 		CE33655E1D819081003E79E8 /* RCTBaiduLocation */ = {
 			isa = PBXGroup;
 			children = (
-				CE33655F1D819081003E79E8 /* RCTBaiduLocation.h */,
-				CE3365601D819081003E79E8 /* RCTBaiduLocation.mm */,
+				CE1AC5591D819A17006598FF /* RCTBaiduLocation.h */,
+				CE1AC55A1D819A17006598FF /* RCTBaiduLocation.mm */,
 			);
 			path = RCTBaiduLocation;
 			sourceTree = "<group>";
@@ -136,7 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE3365611D819081003E79E8 /* RCTBaiduLocation.mm in Sources */,
+				CE1AC55B1D819A17006598FF /* RCTBaiduLocation.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +168,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -180,7 +181,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -211,6 +212,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -218,7 +220,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
