@@ -105,7 +105,8 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows{
  *@param userLocation 新的用户位置
  */
 -(void)didUpdateUserHeading:(BMKUserLocation *)userLocation{
-    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateUserHeading body:@{}];
+    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateUserHeading body:@{
+                                                                                  }];
 }
 
 /**
