@@ -8,57 +8,20 @@ import React, {
 
 const BaiduLocationModule = NativeModules.BaiduLocation;
 
-var willStartLocatingUserSubscript,
-    didStopLocatingUserSubscript,
-    didUpdateUserHeadingSubscript,
+var didStopLocatingUserSubscript,
     didUpdateBMKUserLocationSubscript,
     didFailToLocateUserWithErrorSubscript;
 
 var BaiduLocation = {
-    /***
-     *  设定定位的最小更新距离
-     */
-    setDistanceFilter(distanceFilter:number){
-        BaiduLocationModule.setDistanceFilter(distanceFilter);
-    },
-    /***
-     *  设定定位精度
-     */
-    setDesiredAccuracy(desiredAccuracy:number){
-        BaiduLocationModule.setDesiredAccuracy(desiredAccuracy);
-    },
-    /***
-     *  设定最小更新角度。默认为1度
-     */
-    setHeadingFilter(headingFilter:number){
-        BaiduLocationModule.setHeadingFilter(headingFilter);
-    },
-    /***
-     *  指定定位是否会被系统自动暂停。默认为YES,只在iOS 6.0之后起作用。
-     */
-    setPausesLocationUpdatesAutomatically(canPause:boolean){
-        BaiduLocationModule.setPausesLocationUpdatesAutomatically(canPause);
-    },
-    /***
-     *  指定定位：是否允许后台定位更新。默认为NO。
-     */
-    setAllowsBackgroundLocationUpdates(isAllows:boolean){
-        BaiduLocationModule.setAllowsBackgroundLocationUpdates(isAllows);
-    },
     startLocation(){
         BaiduLocationModule.startLocation();
     },
     stopLocation(){
         BaiduLocationModule.stopLocation();
     },
-    willStartLocatingUser(handler: Function){
-        willStartLocatingUserSubscript = this.addEventListener(BaiduLocationModule.WillStartLocatingUser, handler);
-    },
+
     didStopLocatingUser(handler: Function){
         didStopLocatingUserSubscript = this.addEventListener(BaiduLocationModule.DidStopLocatingUser, handler);
-    },
-    didUpdateUserHeading(handler: Function){
-        didUpdateUserHeadingSubscript = this.addEventListener(BaiduLocationModule.DidUpdateUserHeading, handler);
     },
     didUpdateBMKUserLocation(handler: Function){
         didUpdateBMKUserLocationSubscript = this.addEventListener(BaiduLocationModule.DidUpdateBMKUserLocation, message => {
@@ -88,3 +51,33 @@ var BaiduLocation = {
 };
 
 module.exports = BaiduLocation;
+// /***
+//  *  设定定位的最小更新距离
+//  */
+// setDistanceFilter(distanceFilter:number){
+//     BaiduLocationModule.setDistanceFilter(distanceFilter);
+// },
+// /***
+//  *  设定定位精度
+//  */
+// setDesiredAccuracy(desiredAccuracy:number){
+//     BaiduLocationModule.setDesiredAccuracy(desiredAccuracy);
+// },
+// /***
+//  *  设定最小更新角度。默认为1度
+//  */
+// setHeadingFilter(headingFilter:number){
+//     BaiduLocationModule.setHeadingFilter(headingFilter);
+// },
+// /***
+//  *  指定定位是否会被系统自动暂停。默认为YES,只在iOS 6.0之后起作用。
+//  */
+// setPausesLocationUpdatesAutomatically(canPause:boolean){
+//     BaiduLocationModule.setPausesLocationUpdatesAutomatically(canPause);
+// },
+// /***
+//  *  指定定位：是否允许后台定位更新。默认为NO。
+//  */
+// setAllowsBackgroundLocationUpdates(isAllows:boolean){
+//     BaiduLocationModule.setAllowsBackgroundLocationUpdates(isAllows);
+// },

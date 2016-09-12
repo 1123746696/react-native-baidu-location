@@ -9,9 +9,7 @@
 #import "RCTBaiduLocation.h"
 #import "RCTEventDispatcher.h"
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
-static NSString * const WillStartLocatingUser = @"WillStartLocatingUser";
 static NSString * const DidStopLocatingUser = @"DidStopLocatingUser";
-static NSString * const DidUpdateUserHeading = @"DidUpdateUserHeading";
 static NSString * const DidUpdateBMKUserLocation = @"DidUpdateBMKUserLocation";
 static NSString * const DidFailToLocateUserWithError = @"DidFailToLocateUserWithError";
 
@@ -50,21 +48,28 @@ RCT_EXPORT_MODULE()
 }
 - (NSDictionary<NSString *, id> *)constantsToExport {
     return @{
-             WillStartLocatingUser: WillStartLocatingUser,
              DidStopLocatingUser: DidStopLocatingUser,
-             DidUpdateUserHeading: DidUpdateUserHeading,
              DidUpdateBMKUserLocation: DidUpdateBMKUserLocation,
              DidFailToLocateUserWithError: DidFailToLocateUserWithError,
              };
 }
 RCT_EXPORT_METHOD(startLocation{
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
+    location.locationService.distanceFilter=100;
+    location.locationService.desiredAccuracy=kCLLocationAccuracyBest;
+    location.locationService.pausesLocationUpdatesAutomatically=YES;
+    location.locationService.allowsBackgroundLocationUpdates=false;
+    
     [location.locationService startUserLocationService];
 })
 RCT_EXPORT_METHOD(stopLocation{
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     [location.locationService stopUserLocationService];
 })
+
+
+
+
 RCT_EXPORT_METHOD(setDistanceFilter:(NSNumber *)distanceFilter{
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     location.locationService.distanceFilter=[distanceFilter doubleValue];
@@ -86,35 +91,23 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows{
     location.locationService.allowsBackgroundLocationUpdates=isAllows;
 })
 
-/**
- *在将要启动定位时，会调用此函数
- */
--(void)willStartLocatingUser{
-    [self.bridge.eventDispatcher sendAppEventWithName:WillStartLocatingUser body:@{}];
-}
 
 /**
  *在停止定位后，会调用此函数
  */
 -(void)didStopLocatingUser{
-    [self.bridge.eventDispatcher sendAppEventWithName:DidStopLocatingUser body:@{}];
+    [self.bridge.eventDispatcher sendAppEventWithName:DidStopLocatingUser body:@{@"message":@"停止定位"}];
 }
-
-/**
- *用户方向更新后，会调用此函数
- *@param userLocation 新的用户位置
- */
--(void)didUpdateUserHeading:(BMKUserLocation *)userLocation{
-    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateUserHeading body:@{
-                                                                                  }];
-}
-
 /**
  *用户位置更新后，会调用此函数
  *@param userLocation 新的用户位置
  */
 -(void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation{
-    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:@{}];
+    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:@{@"latitude":@(userLocation.location.coordinate.latitude),
+                                                                                      @"longitude":@(userLocation.location.coordinate.longitude),
+                                                                                      @"address":@"定位成功",
+                                                                                      @"locationDescribe":userLocation.location.description,
+                                                                                      }];
 }
 
 /**
