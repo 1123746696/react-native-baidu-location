@@ -12,7 +12,7 @@
 static NSString * const DidStopLocatingUser = @"DidStopLocatingUser";
 static NSString * const DidUpdateBMKUserLocation = @"DidUpdateBMKUserLocation";
 static NSString * const DidFailToLocateUserWithError = @"DidFailToLocateUserWithError";
-
+static RCTBaiduLocation *_instance = nil;
 @interface RCTBaiduLocation()<BMKLocationServiceDelegate>
 @property(nonatomic,strong)BMKLocationService *locationService;
 @end
@@ -21,11 +21,22 @@ static NSString * const DidFailToLocateUserWithError = @"DidFailToLocateUserWith
 RCT_EXPORT_MODULE()
 
 + (instancetype)sharedInstance {
-    static RCTBaiduLocation *_instance = nil;
+    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         if(_instance == nil) {
             _instance = [[self alloc] init];
+            _instance.locationService=[[BMKLocationService alloc]init];
+            _instance.locationService.delegate=_instance;
+        }
+    });
+    return _instance;
+}
++ (instancetype)allocWithZone:(struct _NSZone *)zone {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if(_instance == nil) {
+            _instance = [super allocWithZone:zone];
             _instance.locationService=[[BMKLocationService alloc]init];
             _instance.locationService.delegate=_instance;
         }
@@ -38,7 +49,6 @@ RCT_EXPORT_MODULE()
     dispatch_once(&onceToken, ^{
         methodQueue = dispatch_queue_create("com.baj.baidulocation", DISPATCH_QUEUE_SERIAL);
     });
-    BMKLocationService *location = [[BMKLocationService alloc]init];
     return methodQueue;
     
 }
@@ -53,49 +63,54 @@ RCT_EXPORT_MODULE()
              DidFailToLocateUserWithError: DidFailToLocateUserWithError,
              };
 }
-RCT_EXPORT_METHOD(startLocation{
+RCT_EXPORT_METHOD(startLocation){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
-    location.locationService.distanceFilter=100;
+    location.locationService.distanceFilter=5;
     location.locationService.desiredAccuracy=kCLLocationAccuracyBest;
     location.locationService.pausesLocationUpdatesAutomatically=YES;
     location.locationService.allowsBackgroundLocationUpdates=false;
     
     [location.locationService startUserLocationService];
-})
-RCT_EXPORT_METHOD(stopLocation{
+    NSLog(@"开始定位：%@",@"");
+}
+RCT_EXPORT_METHOD(stopLocation){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     [location.locationService stopUserLocationService];
-})
+    NSLog(@"结束定位：%@",@"");
+}
 
 
 
 
-RCT_EXPORT_METHOD(setDistanceFilter:(NSNumber *)distanceFilter{
+RCT_EXPORT_METHOD(setDistanceFilter:(NSNumber *)distanceFilter){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     location.locationService.distanceFilter=[distanceFilter doubleValue];
-})
-RCT_EXPORT_METHOD(setDesiredAccuracy:(NSNumber *)desiredAccuracy{
+}
+RCT_EXPORT_METHOD(setDesiredAccuracy:(NSNumber *)desiredAccuracy){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     location.locationService.desiredAccuracy=[desiredAccuracy doubleValue];
-})
-RCT_EXPORT_METHOD(setHeadingFilter:(NSNumber *)headingFilter{
+}
+RCT_EXPORT_METHOD(setHeadingFilter:(NSNumber *)headingFilter){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     location.locationService.headingFilter=[headingFilter doubleValue];
-})
-RCT_EXPORT_METHOD(setPausesLocationUpdatesAutomatically:(BOOL)canPause{
+}
+RCT_EXPORT_METHOD(setPausesLocationUpdatesAutomatically:(BOOL)canPause){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     location.locationService.pausesLocationUpdatesAutomatically=canPause;
-})
-RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows{
+}
+RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     location.locationService.allowsBackgroundLocationUpdates=isAllows;
-})
-
+}
+- (void)willStartLocatingUser{
+    NSLog(@"willStartLocatingUser：%@",@"");
+}
 
 /**
  *在停止定位后，会调用此函数
  */
 -(void)didStopLocatingUser{
+    NSLog(@"停止定位：%@",@"");
     [self.bridge.eventDispatcher sendAppEventWithName:DidStopLocatingUser body:@{@"message":@"停止定位"}];
 }
 /**
@@ -103,11 +118,13 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows{
  *@param userLocation 新的用户位置
  */
 -(void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation{
-    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:@{@"latitude":@(userLocation.location.coordinate.latitude),
-                                                                                      @"longitude":@(userLocation.location.coordinate.longitude),
-                                                                                      @"address":@"定位成功",
-                                                                                      @"locationDescribe":userLocation.location.description,
-                                                                                      }];
+    NSDictionary *dic =@{@"latitude":@(userLocation.location.coordinate.latitude),
+                         @"longitude":@(userLocation.location.coordinate.longitude),
+                         @"address":@"定位成功",
+                         @"locationDescribe":userLocation.location.description,
+                         };
+    NSLog(@"位置更新：%@",dic);
+    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:dic];
 }
 
 /**
@@ -115,6 +132,7 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows{
  *@param error 错误号
  */
 -(void)didFailToLocateUserWithError:(NSError *)error{
+    NSLog(@"定位失败：%@",error);
     [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(error.code),@"message":error.domain}];
 }
 
