@@ -108,6 +108,13 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
         map.putDouble("latitude",location.getLatitude());
         map.putDouble("longitude",location.getLongitude());
         map.putString("address",location.getAddrStr());
+
+
+        map.putString("province",location.getProvince());
+        map.putString("city",location.getCity());
+        map.putString("district",location.getDistrict());
+        map.putString("streetName",location.getStreet());
+        map.putString("streetNumber",location.getStreetNumber());
         if (location.getLocType() == BDLocation.TypeGpsLocation){// GPS定位结果
             map.putString("describe","gps定位成功");
         } else if (location.getLocType() == BDLocation.TypeNetWorkLocation){// 网络定位结果

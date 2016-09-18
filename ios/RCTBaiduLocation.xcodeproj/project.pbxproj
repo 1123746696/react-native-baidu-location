@@ -10,6 +10,7 @@
 		CE1AC55B1D819A17006598FF /* RCTBaiduLocation.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE1AC55A1D819A17006598FF /* RCTBaiduLocation.mm */; };
 		CE33656A1D819844003E79E8 /* BaiduMapAPI_Base.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */; };
 		CE33656B1D819844003E79E8 /* BaiduMapAPI_Location.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */; };
+		CE3B8AC11D8E62D7004D254D /* BaiduMapAPI_Search.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3B8AC01D8E62D7004D254D /* BaiduMapAPI_Search.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +31,7 @@
 		CE33652C1D81689E003E79E8 /* libRCTBaiduLocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBaiduLocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Base.framework; sourceTree = "<group>"; };
 		CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Location.framework; sourceTree = "<group>"; };
+		CE3B8AC01D8E62D7004D254D /* BaiduMapAPI_Search.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BaiduMapAPI_Search.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 			files = (
 				CE33656A1D819844003E79E8 /* BaiduMapAPI_Base.framework in Frameworks */,
 				CE33656B1D819844003E79E8 /* BaiduMapAPI_Location.framework in Frameworks */,
+				CE3B8AC11D8E62D7004D254D /* BaiduMapAPI_Search.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +77,7 @@
 		CE3365671D819844003E79E8 /* BaiduLocation */ = {
 			isa = PBXGroup;
 			children = (
+				CE3B8AC01D8E62D7004D254D /* BaiduMapAPI_Search.framework */,
 				CE3365681D819844003E79E8 /* BaiduMapAPI_Base.framework */,
 				CE3365691D819844003E79E8 /* BaiduMapAPI_Location.framework */,
 			);
