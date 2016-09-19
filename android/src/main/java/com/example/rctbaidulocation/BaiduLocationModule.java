@@ -53,17 +53,21 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
         super(reactContext);
         mReactContext = reactContext;
         mReactContext.addLifecycleEventListener(this);
-        mLocationClient = new LocationClient(reactContext.getBaseContext());     //声明LocationClient类
-        mLocationClient.registerLocationListener(new BDLocationListener() {
-            @Override
-            public void onReceiveLocation(BDLocation location) {
-                if (location.getLocType() == BDLocation.TypeGpsLocation||location.getLocType() == BDLocation.TypeNetWorkLocation||location.getLocType() == BDLocation.TypeOffLineLocation) {// 定位成功
-                    sendSuccessEvent(location);
-                } else {
-                    sendFailureEvent(location);
-                }
-            }
-        });
+
+//        mLocationClient = new LocationClient(reactContext.getBaseContext());     //声明LocationClient类
+//        mLocationClient.registerLocationListener(new BDLocationListener() {
+//            @Override
+//            public void onReceiveLocation(BDLocation location) {
+//                Log.v(TAG, "onReceiveLocation");
+//                if (location.getLocType() == BDLocation.TypeGpsLocation||location.getLocType() == BDLocation.TypeNetWorkLocation||location.getLocType() == BDLocation.TypeOffLineLocation) {// 定位成功
+//                    Log.v(TAG, "get location " + location.getCity());
+//                    sendSuccessEvent(location);
+//                } else {
+//                    Log.v(TAG, "get failed ");
+//                    sendFailureEvent(location);
+//                }
+//            }
+//        });
     }
     @Override
     public Map<String, Object> getConstants() {
@@ -94,6 +98,23 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
 
     @ReactMethod
     public void startLocation() {
+        if (mLocationClient == null) {
+            mLocationClient = new LocationClient(mReactContext.getBaseContext());     //声明LocationClient类
+            mLocationClient.registerLocationListener(new BDLocationListener() {
+                @Override
+                public void onReceiveLocation(BDLocation location) {
+                    Log.v(TAG, "onReceiveLocation");
+                    if (location.getLocType() == BDLocation.TypeGpsLocation||location.getLocType() == BDLocation.TypeNetWorkLocation||location.getLocType() == BDLocation.TypeOffLineLocation) {// 定位成功
+                        Log.v(TAG, "get location " + location.getCity());
+                        sendSuccessEvent(location);
+                    } else {
+                        Log.v(TAG, "get failed ");
+                        sendFailureEvent(location);
+                    }
+                }
+            });
+        }
+
         setLocationOption(null);
         mLocationClient.start();
     }
