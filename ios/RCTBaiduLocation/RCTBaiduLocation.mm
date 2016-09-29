@@ -50,19 +50,19 @@ RCT_EXPORT_MODULE()
     });
     return _instance;
 }
-//+ (dispatch_queue_t)sharedMethodQueue {
-//    static dispatch_queue_t methodQueue;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        methodQueue = dispatch_queue_create("com.baj.baidulocation", DISPATCH_QUEUE_SERIAL);
-//    });
-//    return methodQueue;
-//    
-//}
-//
-//- (dispatch_queue_t)methodQueue {
-//    return [RCTBaiduLocation sharedMethodQueue];
-//}
++ (dispatch_queue_t)sharedMethodQueue {
+    static dispatch_queue_t methodQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        methodQueue = dispatch_queue_create("com.baj.baidulocation", DISPATCH_QUEUE_SERIAL);
+    });
+    return methodQueue;
+    
+}
+
+- (dispatch_queue_t)methodQueue {
+    return [RCTBaiduLocation sharedMethodQueue];
+}
 - (NSDictionary<NSString *, id> *)constantsToExport {
     return @{
              DidStopLocatingUser: DidStopLocatingUser,
