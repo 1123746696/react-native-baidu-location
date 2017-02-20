@@ -12,7 +12,7 @@ node_modules/react-native-baidu-location/ios/BaiduLocation/BaiduMapAPI_Location.
 node_modules/react-native-baidu-location/ios/BaiduLocation/BaiduMapAPI_Search.framework<br>
 
 2.在工程目录结构中,添加百度定位SDK引用,在TARGETS-->Build Settings-->Framework Search Paths, 添加:
-$(SRCROOT)/../node_modules/react-native-umeng-analytics/ios/BaiduLocation<br>
+$(SRCROOT)/../node_modules/react-native-baidu-location/ios/BaiduLocation<br>
 
 
 注：自iOS8起，系统定位功能进行了升级，开发者在使用定位功能之前，需要在info.plist里添加（以下二选一，两个都添加默认使用NSLocationWhenInUseUsageDescription）：
