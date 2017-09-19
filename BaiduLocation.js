@@ -13,6 +13,9 @@ var didStopLocatingUserSubscript,
     didFailToLocateUserWithErrorSubscript;
 
 var BaiduLocation = {
+    start(key:String) {
+        BaiduLocationModule.start(key);
+    }
     startLocation(){
         BaiduLocationModule.startLocation();
     },
