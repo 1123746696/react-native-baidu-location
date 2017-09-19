@@ -10,6 +10,7 @@
 #import "RCTEventDispatcher.h"
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
+#import <BaiduMapAPI_Base/BMKBaseComponent.h>
 static NSString * const DidStopLocatingUser = @"DidStopLocatingUser";
 static NSString * const DidUpdateBMKUserLocation = @"DidUpdateBMKUserLocation";
 static NSString * const DidFailToLocateUserWithError = @"DidFailToLocateUserWithError";
@@ -168,4 +169,65 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
         [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(error),@"message":@"位置反解析失败"}];
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++(id)shareMapManager{
+    static BMKMapManager *_mapManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _mapManager = [[BMKMapManager alloc] init];
+    });
+    return _mapManager;
+    
+}
+
+RCT_EXPORT_METHOD(start:(NSString *)key){
+    BMKMapManager *_mapManager = [RCTBaiduLocation shareMapManager];
+    // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
+    BOOL ret = [_mapManager start:key  generalDelegate:_mapManager];
+    if (!ret) {
+        NSLog(@"manager start failed!");
+    }else{
+        NSLog(@"map success");
+    }
+}
+
+- (void)onGetNetworkState:(int)iError
+{
+    if (0 == iError) {
+        NSLog(@"联网成功");
+    }
+    else{
+        NSLog(@"onGetNetworkState %d",iError);
+    }
+    
+}
+
+- (void)onGetPermissionState:(int)iError
+{
+    if (0 == iError) {
+        NSLog(@"授权成功");
+    }
+    else {
+        NSLog(@"onGetPermissionState %d",iError);
+    }
+}
+
+
+
+
+
 @end

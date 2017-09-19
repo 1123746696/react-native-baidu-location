@@ -192,5 +192,14 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
     @Override
     public void onHostDestroy() {
     }
+    
+    /***
+     * 设置baiduMap的Key
+     * @param key     baiduMap的key
+     */
+    @ReactMethod
+    public void start(String key) {//该key暂时没用，已经写死在AndroidManifest.xml里边
+        SDKInitializer.initialize(getReactApplicationContext().getApplicationContext());
+    }
 
 }
