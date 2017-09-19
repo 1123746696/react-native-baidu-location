@@ -15,7 +15,7 @@ var didStopLocatingUserSubscript,
 var BaiduLocation = {
     start(key:String) {
         BaiduLocationModule.start(key);
-    }
+    },
     startLocation(){
         BaiduLocationModule.startLocation();
     },
