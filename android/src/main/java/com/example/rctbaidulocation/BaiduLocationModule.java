@@ -9,6 +9,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
+import com.baidu.mapapi.SDKInitializer;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -200,6 +201,7 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
     @ReactMethod
     public void start(String key) {//该key暂时没用，已经写死在AndroidManifest.xml里边
         SDKInitializer.initialize(getReactApplicationContext().getApplicationContext());
+
     }
 
 }
