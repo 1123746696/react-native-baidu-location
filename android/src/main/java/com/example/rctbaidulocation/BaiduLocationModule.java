@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.Manifest;
+
 /**
  * Created by user on 16/9/8.
  */
@@ -70,6 +72,7 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
 //            }
 //        });
     }
+
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
@@ -80,11 +83,11 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
     }
 
     @ReactMethod
-    public void setLocationOption(ReadableMap optionMap){
+    public void setLocationOption(ReadableMap optionMap) {
         LocationClientOption option = new LocationClientOption();
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
         );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        int span=1000;
+        int span = 1000;
         option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
         option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
         option.setOpenGps(true);//可选，默认false,设置是否使用gps
@@ -99,84 +102,102 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
 
     @ReactMethod
     public void startLocation() {
-        if (mLocationClient == null) {
-            mLocationClient = new LocationClient(mReactContext.getBaseContext());     //声明LocationClient类
-            mLocationClient.registerLocationListener(new BDLocationListener() {
-                @Override
-                public void onReceiveLocation(BDLocation location) {
-                    Log.v(TAG, "onReceiveLocation");
-                    if (location.getLocType() == BDLocation.TypeGpsLocation||location.getLocType() == BDLocation.TypeNetWorkLocation||location.getLocType() == BDLocation.TypeOffLineLocation) {// 定位成功
-                        Log.v(TAG, "get location " + location.getCity());
-                        sendSuccessEvent(location);
-                    } else {
-                        Log.v(TAG, "get failed ");
-                        sendFailureEvent(location);
-                    }
+        /**
+         * 申请文件读写、相机、位置权限
+         */
+        PermissionUtils.requestPermissions(getCurrentActivity(), 0x11, new String[]{
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION}, new PermissionUtils.OnPermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                if (mLocationClient == null) {
+                    mLocationClient = new LocationClient(mReactContext.getBaseContext());     //声明LocationClient类
+                    mLocationClient.registerLocationListener(new BDLocationListener() {
+                        @Override
+                        public void onReceiveLocation(BDLocation location) {
+                            Log.v(TAG, "onReceiveLocation");
+                            if (location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation || location.getLocType() == BDLocation.TypeOffLineLocation) {// 定位成功
+                                Log.v(TAG, "get location " + location.getCity());
+                                sendSuccessEvent(location);
+                            } else {
+                                Log.v(TAG, "get failed ");
+                                sendFailureEvent(location);
+                            }
+                        }
+                    });
                 }
-            });
-        }
 
-        setLocationOption(null);
-        mLocationClient.start();
+                setLocationOption(null);
+                mLocationClient.start();
+            }
+
+            @Override
+            public void onPermissionDenied(String[] deniedPermissions) {
+
+            }
+        });
+
     }
+
     @ReactMethod
     public void stopLocation() {
         mLocationClient.stop();
         sendDidStopEvent();
     }
 
-    protected  void sendSuccessEvent(BDLocation location){
+    protected void sendSuccessEvent(BDLocation location) {
         WritableMap map = Arguments.createMap();
-        map.putDouble("latitude",location.getLatitude());
-        map.putDouble("longitude",location.getLongitude());
-        map.putString("address",location.getAddrStr());
+        map.putDouble("latitude", location.getLatitude());
+        map.putDouble("longitude", location.getLongitude());
+        map.putString("address", location.getAddrStr());
 
 
-        map.putString("province",location.getProvince());
-        map.putString("city",location.getCity());
-        map.putString("district",location.getDistrict());
-        map.putString("streetName",location.getStreet());
-        map.putString("streetNumber",location.getStreetNumber());
-        if (location.getLocType() == BDLocation.TypeGpsLocation){// GPS定位结果
-            map.putString("describe","gps定位成功");
-        } else if (location.getLocType() == BDLocation.TypeNetWorkLocation){// 网络定位结果
-            map.putString("describe","网络定位成功");
+        map.putString("province", location.getProvince());
+        map.putString("city", location.getCity());
+        map.putString("district", location.getDistrict());
+        map.putString("streetName", location.getStreet());
+        map.putString("streetNumber", location.getStreetNumber());
+        if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
+            map.putString("describe", "gps定位成功");
+        } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
+            map.putString("describe", "网络定位成功");
         } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
-            map.putString("describe","离线定位成功");
+            map.putString("describe", "离线定位成功");
         }
-        map.putString("locationDescribe",location.getLocationDescribe());
-        sendEvent(DidUpdateBMKUserLocation,map);
+        map.putString("locationDescribe", location.getLocationDescribe());
+        sendEvent(DidUpdateBMKUserLocation, map);
     }
-    protected  void sendFailureEvent(BDLocation location){
+
+    protected void sendFailureEvent(BDLocation location) {
         WritableMap map = Arguments.createMap();
-        map.putInt("code",BDLocation.TypeServerError);
+        map.putInt("code", BDLocation.TypeServerError);
         if (location.getLocType() == BDLocation.TypeServerError) {
-            map.putString("message","服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+            map.putString("message", "服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
         } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-            map.putString("message","网络不同导致定位失败，请检查网络是否通畅");
+            map.putString("message", "网络不同导致定位失败，请检查网络是否通畅");
         } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-            map.putString("message","无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
-        }else{
-            map.putString("message","定位失败");
+            map.putString("message", "无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+        } else {
+            map.putString("message", "定位失败");
         }
-        map.putString("locationDescribe",location.getLocationDescribe());
-        sendEvent(DidFailToLocateUserWithError,map);
+        map.putString("locationDescribe", location.getLocationDescribe());
+        sendEvent(DidFailToLocateUserWithError, map);
     }
-    protected  void sendDidStopEvent(){
+
+    protected void sendDidStopEvent() {
         WritableMap map = Arguments.createMap();
         map.putString("message", "停止定位");
-        sendEvent(DidStopLocatingUser,map);
+        sendEvent(DidStopLocatingUser, map);
     }
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {
         //此处需要添加hasActiveCatalystInstance，否则可能造成崩溃
         //问题解决参考: https://github.com/walmartreact/react-native-orientation-listener/issues/8
-        if(mReactContext.hasActiveCatalystInstance()) {
+        if (mReactContext.hasActiveCatalystInstance()) {
             Log.i(TAG, "hasActiveCatalystInstance");
             mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit(eventName, params);
-        }
-        else {
+        } else {
             Log.i(TAG, "not hasActiveCatalystInstance");
         }
     }
@@ -193,7 +214,7 @@ public class BaiduLocationModule extends ReactContextBaseJavaModule implements L
     @Override
     public void onHostDestroy() {
     }
-    
+
     /***
      * 设置baiduMap的Key
      * @param key     baiduMap的key
