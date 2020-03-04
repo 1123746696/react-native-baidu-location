@@ -11,6 +11,7 @@
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
 #import <BaiduMapAPI_Base/BMKBaseComponent.h>
+#import <CoreLocation/CoreLocation.h>
 static NSString * const DidStopLocatingUser = @"DidStopLocatingUser";
 static NSString * const DidUpdateBMKUserLocation = @"DidUpdateBMKUserLocation";
 static NSString * const DidFailToLocateUserWithError = @"DidFailToLocateUserWithError";
@@ -66,10 +67,10 @@ RCT_EXPORT_MODULE()
 }
 - (NSDictionary<NSString *, id> *)constantsToExport {
     return @{
-             DidStopLocatingUser: DidStopLocatingUser,
-             DidUpdateBMKUserLocation: DidUpdateBMKUserLocation,
-             DidFailToLocateUserWithError: DidFailToLocateUserWithError,
-             };
+DidStopLocatingUser: DidStopLocatingUser,
+DidUpdateBMKUserLocation: DidUpdateBMKUserLocation,
+DidFailToLocateUserWithError: DidFailToLocateUserWithError,
+};
 }
 RCT_EXPORT_METHOD(startLocation){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
@@ -130,14 +131,45 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
  *@param userLocation 新的用户位置
  */
 -(void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation{
-    BMKReverseGeoCodeOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeOption alloc]init];//初始化反编码请求
-    reverseGeocodeSearchOption.reverseGeoPoint = userLocation.location.coordinate;//设置反编码
-    BOOL flag = [self.geocodeSearch reverseGeoCode:reverseGeocodeSearchOption];//发送反编码请求.并返回是否成功
-    if(!flag)
-    {
-        [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(-1),@"message":@"位置反解析失败"}];
-    }
+    //    BMKReverseGeoCodeOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeOption alloc]init];//初始化反编码请求
+    //    reverseGeocodeSearchOption.reverseGeoPoint = userLocation.location.coordinate;//设置反编码
+    //    BOOL flag = [self.geocodeSearch reverseGeoCode:reverseGeocodeSearchOption];//发送反编码请求.并返回是否成功
+    //    if(!flag)
+    //    {
+    //        [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(-1),@"message":@"位置反解析失败"}];
+    //    }
     
+    CLGeocoder* geocoder = [[CLGeocoder alloc] init];
+    [geocoder reverseGeocodeLocation:userLocation.location completionHandler:^(NSArray *placemarks, NSError *error) {
+        if(error || placemarks.count == 0){
+            NSLog(@"error = %@",error);
+            [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(-1),@"message":@"位置反解析失败"}];
+        }else{
+            CLPlacemark* placemark = placemarks.firstObject;
+            NSDictionary* addressDictionary = [placemark addressDictionary];
+            
+            
+            NSString* province = [addressDictionary objectForKey:@"State"] ? [addressDictionary objectForKey:@"State"] : [addressDictionary objectForKey:@"City"];
+            
+            NSString* city = [addressDictionary objectForKey:@"City"] ? [addressDictionary objectForKey:@"City"] : @"";
+            NSString* district = [addressDictionary objectForKey:@"SubLocality"] ? [addressDictionary objectForKey:@"SubLocality"] : @"";
+            NSString* streetName = [addressDictionary objectForKey:@"Street"] ? [addressDictionary objectForKey:@"Street"] : @"";
+            NSString* streetNumber = [addressDictionary objectForKey:@"streetNumber"] ? [addressDictionary objectForKey:@"streetNumber"] : @"";
+            
+            NSMutableDictionary* locationDict = [NSMutableDictionary dictionary];
+            [locationDict setObject:@(userLocation.location.coordinate.latitude) forKey:@"latitude"];
+            [locationDict setObject:@(userLocation.location.coordinate.longitude) forKey:@"longitude"];
+            [locationDict setObject:[[addressDictionary objectForKey:@"FormattedAddressLines"] componentsJoinedByString:@""] forKey:@"address"];
+            [locationDict setObject:[[addressDictionary objectForKey:@"FormattedAddressLines"] componentsJoinedByString:@""] forKey:@"locationDescribe"];
+            [locationDict setObject:province forKey:@"province"];
+            [locationDict setObject:city forKey:@"city"];
+            [locationDict setObject:district forKey:@"district"];
+            [locationDict setObject:streetName forKey:@"streetName"];
+            [locationDict setObject:streetNumber forKey:@"streetNumber"];
+            
+            [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:locationDict];
+        }
+    }];
     
 }
 
@@ -154,20 +186,20 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
 {
     if (error == 0) {
         NSDictionary *dic =@{@"latitude":@(result.location.latitude),
-                             @"longitude":@(result.location.longitude),
-                             @"address":result.address,
-                             @"locationDescribe":result.address,
-                             @"province":result.addressDetail.province,
-                             @"city":result.addressDetail.city,
-                             @"district":result.addressDetail.district,
-                             @"streetName":result.addressDetail.streetName,
-                             @"streetNumber":result.addressDetail.streetNumber,
-                             };
-        NSLog(@"位置更新：%@",dic);
-        [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:dic];
-    }else{
-        [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(error),@"message":@"位置反解析失败"}];
-    }
+        @"longitude":@(result.location.longitude),
+        @"address":result.address,
+        @"locationDescribe":result.address,
+        @"province":result.addressDetail.province,
+        @"city":result.addressDetail.city,
+        @"district":result.addressDetail.district,
+        @"streetName":result.addressDetail.streetName,
+        @"streetNumber":result.addressDetail.streetNumber,
+    };
+    NSLog(@"位置更新：%@",dic);
+    [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:dic];
+}else{
+    [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(error),@"message":@"位置反解析失败"}];
+}
 }
 
 
@@ -231,3 +263,4 @@ RCT_EXPORT_METHOD(start:(NSString *)key){
 
 
 @end
+
