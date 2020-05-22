@@ -1,4 +1,4 @@
-//
+
 //  RCTBaiduLocation.m
 //  RCTBaiduLocation
 //
@@ -18,9 +18,11 @@ static NSString * const DidFailToLocateUserWithError = @"DidFailToLocateUserWith
 static RCTBaiduLocation *_instance = nil;
 
 
-@interface RCTBaiduLocation()<BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate>
+@interface RCTBaiduLocation()<BMKLocationServiceDelegate,BMKGeoCodeSearchDelegate, CLLocationManagerDelegate>
 @property(nonatomic,strong)BMKLocationService *locationService;
 @property(nonatomic,strong)BMKGeoCodeSearch *geocodeSearch;
+/** 定位管理者 */
+@property (nonatomic, strong) CLLocationManager * locationManager;
 @end
 @implementation RCTBaiduLocation
 @synthesize bridge = _bridge;
@@ -32,10 +34,20 @@ RCT_EXPORT_MODULE()
     dispatch_once(&onceToken, ^{
         if(_instance == nil) {
             _instance = [[self alloc] init];
-            _instance.locationService=[[BMKLocationService alloc]init];
-            _instance.locationService.delegate=_instance;
-            _instance.geocodeSearch=[[BMKGeoCodeSearch alloc]init];
-            _instance.geocodeSearch.delegate=_instance;
+//            _instance.locationService=[[BMKLocationService alloc]init];
+//            _instance.locationService.delegate=_instance;
+//            _instance.geocodeSearch=[[BMKGeoCodeSearch alloc]init];
+//            _instance.geocodeSearch.delegate=_instance;
+                        _instance.locationManager = [[CLLocationManager alloc] init];
+                        /** 导航类型 */
+                        _instance.locationManager.activityType = CLActivityTypeFitness;
+                        /** 设置代理, 非常关键 */
+                        _instance.locationManager.delegate = _instance;
+                        /** 想要定位的精确度, kCLLocationAccuracyBest:最好的 */
+                        _instance.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+                        /** 获取用户的版本号 */
+            //            if([[UIDevice currentDevice].systemVersion floatValue] >= 8.0){
+                            [_instance.locationManager requestAlwaysAuthorization];
             
         }
     });
@@ -46,8 +58,18 @@ RCT_EXPORT_MODULE()
     dispatch_once(&onceToken, ^{
         if(_instance == nil) {
             _instance = [super allocWithZone:zone];
-            _instance.locationService=[[BMKLocationService alloc]init];
-            _instance.locationService.delegate=_instance;
+//            _instance.locationService=[[BMKLocationService alloc]init];
+//            _instance.locationService.delegate=_instance;
+            _instance.locationManager = [[CLLocationManager alloc] init];
+            /** 导航类型 */
+            _instance.locationManager.activityType = CLActivityTypeFitness;
+            /** 设置代理, 非常关键 */
+            _instance.locationManager.delegate = _instance;
+            /** 想要定位的精确度, kCLLocationAccuracyBest:最好的 */
+            _instance.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+            /** 获取用户的版本号 */
+//            if([[UIDevice currentDevice].systemVersion floatValue] >= 8.0){
+            [_instance.locationManager requestAlwaysAuthorization];
         }
     });
     return _instance;
@@ -73,19 +95,31 @@ DidFailToLocateUserWithError: DidFailToLocateUserWithError,
 };
 }
 RCT_EXPORT_METHOD(startLocation){
+    NSLog(@"开始定位：%@",@"嘻嘻嘻嘻嘻嘻");
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
-    location.locationService.distanceFilter=5;
-    location.locationService.desiredAccuracy=kCLLocationAccuracyBest;
-    location.locationService.pausesLocationUpdatesAutomatically=YES;
-    location.locationService.allowsBackgroundLocationUpdates=false;
-    if(!location.geocodeSearch){
-        location.geocodeSearch=[[BMKGeoCodeSearch alloc]init];
-        location.geocodeSearch.delegate=location;
-    }
-    [location.locationService startUserLocationService];
+//    location.locationService.distanceFilter=5;
+//    location.locationService.desiredAccuracy=kCLLocationAccuracyBest;
+//    location.locationService.pausesLocationUpdatesAutomatically=YES;
+//    location.locationService.allowsBackgroundLocationUpdates=false;
+//    NSLog(@"开始定位：%@",@"嘻嘻嘻嘻嘻嘻");
+//    if(!location.geocodeSearch){
+//        location.geocodeSearch=[[BMKGeoCodeSearch alloc]init];
+//        location.geocodeSearch.delegate=location;
+//    }
+//    [location.locationService startUserLocationService];
+//
+//    NSLog(@"开始定位：%@",@"");
     
-    NSLog(@"开始定位：%@",@"");
+    if([CLLocationManager locationServicesEnabled]) {
+    //        多次定位
+//            [location.locationManager startUpdatingLocation];
+    //        只定位一次
+            [location.locationManager requestLocation];
+        } else {
+            NSLog(@"不能定位呀");
+        }
 }
+
 RCT_EXPORT_METHOD(stopLocation){
     RCTBaiduLocation *location = [RCTBaiduLocation sharedInstance];
     [location.locationService stopUserLocationService];
@@ -139,8 +173,48 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
     //        [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(-1),@"message":@"位置反解析失败"}];
     //    }
     
+    [self reverseGeocodeLocation: userLocation.location];
+    
+}
+
+-(void)locationManager:(nonnull CLLocationManager *)manager didUpdateLocations:(nonnull NSArray<CLLocation *> *)locations
+{
+      CLLocation *location = locations.lastObject;
+    NSString* latitude = [NSString stringWithFormat:@"%f",location.coordinate.latitude];
+    NSString* longitude = [NSString stringWithFormat:@"%f",location.coordinate.longitude];
+//    NSLog(@"latitude ==", latitude);
+//    NSLog(@"longitude ==", longitude);
+    [self reverseGeocodeLocation: location];
+    [manager stopUpdatingLocation];
+}
+
+/**
+*原生定位
+*用户位置更新后，会调用此函数
+*@param userLocation 新的用户位置
+*/
+- (void) locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+    [manager stopUpdatingLocation];
+//      CLLocation *location = locations.lastObject;
+//
+    NSString* latitude = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
+    NSString* longitude = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
+//    NSLog(@"latitude ==", latitude);
+//    NSLog(@"longitude ==", longitude);
+    [self reverseGeocodeLocation: newLocation];
+    [manager stopUpdatingLocation];
+//   [self reverseGeocodeLocation: userLocation.location]; NSLog(@"位置信息维度%f,经度%f,海拔%f,方向%f,速度%fM/s,时间%@,水平精确度%f",location.coordinate.latitude,location.coordinate.longitude,location.altitude,location.course,location.speed,location.timestamp,location.horizontalAccuracy);
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
+ 
+    NSLog(@"定位失败");
+}
+
+
+- (void)reverseGeocodeLocation: (CLLocation*)userLocation{
     CLGeocoder* geocoder = [[CLGeocoder alloc] init];
-    [geocoder reverseGeocodeLocation:userLocation.location completionHandler:^(NSArray *placemarks, NSError *error) {
+    [geocoder reverseGeocodeLocation:userLocation completionHandler:^(NSArray *placemarks, NSError *error) {
         if(error || placemarks.count == 0){
             NSLog(@"error = %@",error);
             [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(-1),@"message":@"位置反解析失败"}];
@@ -157,8 +231,8 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
             NSString* streetNumber = [addressDictionary objectForKey:@"streetNumber"] ? [addressDictionary objectForKey:@"streetNumber"] : @"";
             
             NSMutableDictionary* locationDict = [NSMutableDictionary dictionary];
-            [locationDict setObject:@(userLocation.location.coordinate.latitude) forKey:@"latitude"];
-            [locationDict setObject:@(userLocation.location.coordinate.longitude) forKey:@"longitude"];
+            [locationDict setObject:@(userLocation.coordinate.latitude) forKey:@"latitude"];
+            [locationDict setObject:@(userLocation.coordinate.longitude) forKey:@"longitude"];
             [locationDict setObject:[[addressDictionary objectForKey:@"FormattedAddressLines"] componentsJoinedByString:@""] forKey:@"address"];
             [locationDict setObject:[[addressDictionary objectForKey:@"FormattedAddressLines"] componentsJoinedByString:@""] forKey:@"locationDescribe"];
             [locationDict setObject:province forKey:@"province"];
@@ -170,7 +244,6 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
             [self.bridge.eventDispatcher sendAppEventWithName:DidUpdateBMKUserLocation body:locationDict];
         }
     }];
-    
 }
 
 /**
@@ -201,19 +274,6 @@ RCT_EXPORT_METHOD(setAllowsBackgroundLocationUpdates:(BOOL)isAllows){
     [self.bridge.eventDispatcher sendAppEventWithName:DidFailToLocateUserWithError body:@{@"code:":@(error),@"message":@"位置反解析失败"}];
 }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 +(id)shareMapManager{
@@ -257,9 +317,6 @@ RCT_EXPORT_METHOD(start:(NSString *)key){
         NSLog(@"onGetPermissionState %d",iError);
     }
 }
-
-
-
 
 
 @end
